@@ -121,6 +121,122 @@ public class SinglyLinkedList {
     }
 
     /**
+     * 判断单链表是否有环路
+     * 算法思想：
+     * 设定两个快慢指针slow和fast
+     * 其中slow每次向前一步，fast每次向前两步
+     * 那么，如果链表存在环，则slow和fast相遇，相当于fast已经超越slow一圈
+     * 若链表没有环，则fast最先到达链表末尾
+     *
+     * @param head
+     * @return
+     */
+    public boolean hasCircle(Node head) {
+        if (head == null)
+            return false;
+        Node slow = head;
+        Node fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            if (slow == fast)
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * 环的长度
+     *
+     * @param head
+     * @return
+     */
+    public int circleLen(Node head) {
+        if (!hasCircle(head))
+            return 0;
+        Node slow = head;
+        Node fast = head;
+        Node pos = null;
+        //一定有环
+        while (true) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                pos = slow;
+                break;
+            }
+        }
+        int sLen = 0;
+        int fLen = 0;
+        slow = pos;
+        fast = pos;
+        while (true) {
+            slow = slow.next;
+            fast = fast.next.next;
+            sLen += 1;
+            fLen += 2;
+            if (slow == fast) {
+                break;
+            }
+        }
+        return fLen - sLen;
+    }
+
+    /**
+     * 求环连接点的位置
+     *
+     * @param head
+     * @return
+     */
+    public Node intersectionPoint(Node head) {
+        if (!hasCircle(head))
+            return null;
+        Node slow = head;
+        Node fast = head;
+        Node pos = null;
+        //一定有环
+        while (true) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                pos = slow;
+                break;
+            }
+        }
+        Node pHead = head;
+        while (pHead != pos) {
+            pHead = pHead.next;
+            pos = pos.next;
+        }
+        return pHead;
+    }
+
+    /**
+     * 返回有环链表的头节点
+     * 1->2->3->4->5->6->3
+     *
+     * @return
+     */
+    public Node buildCircleList() {
+        Node node1 = new Node(1);
+        Node node2 = new Node(2);
+        Node node3 = new Node(3);
+        Node node4 = new Node(4);
+        Node node5 = new Node(5);
+        Node node6 = new Node(6);
+
+        node1.next = node2;
+        node2.next = node3;
+        node3.next = node4;
+        node4.next = node5;
+        node5.next = node6;
+        node6.next = node3;
+
+        return node1;
+    }
+
+    /**
      * 从头到尾遍历单链表
      */
     public void printList() {
@@ -146,5 +262,11 @@ public class SinglyLinkedList {
         System.out.println("链表的长度为：" + list.size);
         list.reverse();
         list.printList();
+
+        System.out.println("是否有环：" + list.hasCircle(list.head));
+        System.out.println("是否有环：" + list.hasCircle(list.buildCircleList()));
+
+        System.out.println("环的长度：" + list.circleLen(list.buildCircleList()));
+        System.out.println("环的连接点位置：" + list.intersectionPoint(list.buildCircleList()).data);
     }
 }
